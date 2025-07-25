@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <div id="status"></div>
+        
+        <div class="admin-tabs">
+            <button onclick="loadBookings()">Bookings</button>
+            <button onclick="loadUsers()">Users</button>
+        </div>
+        
+        <div id="content"></div>
+    </div>
+    
+    <script>
+    async function loadBookings() {
+        try {
+            const response = await fetch('admin_api.php?action=get_all_bookings');
+            const bookings = await response.json();
+            
+            document.getElementById('content').innerHTML = `
+                <h3>All Bookings</h3>
+                <table class="bookings-table">
+                    <tr><th>ID</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Status</th></tr>
+                    ${bookings.map(b => `<tr><td>${b.id}</td><td>${b.guest_name}</td><td>${b.room_name}</td><td>${b.checkin_date}</td><td>${b.status}</td></tr>`).join('')}
+                </table>
+            `;
+        } catch (error) {
+            document.getElementById('content').innerHTML = 'Error loading bookings';
+        }
+    }
+    
+    async function loadUsers() {
+        try {
+            const response = await fetch('admin_api.php?action=get_users');
+            const users = await response.json();
+            
+            document.getElementById('content').innerHTML = `
+                <h3>All Users</h3>
+                <table class="bookings-table">
+                    <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th></tr>
+                    ${users.map(u => `<tr><td>${u.id}</td><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td></tr>`).join('')}
+                </table>
+            `;
+        } catch (error) {
+            document.getElementById('content').innerHTML = 'Error loading users';
+        }
+    }
+    
+    // Check auth on load
+    fetch('check_admin.php')
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                document.getElementById('status').innerHTML = `<p>Welcome ${result.user.name}</p>`;
+                loadBookings();
+            } else {
+                document.getElementById('status').innerHTML = '<p style="color:red;">Not logged in as admin</p>';
+            }
+        });
+    </script>
+</body>
+</html>

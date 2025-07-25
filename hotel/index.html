@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature Retreat Booking System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-container">
+            <div class="login-header">
+                <h2>🌿 Nature Retreat</h2>
+                <p id="authSubtitle">Sign in to continue</p>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="login-form" id="loginForm">
+                <div class="input-group">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                </div>
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+            
+            <!-- Sign Up Form -->
+            <form class="login-form" id="signupForm" style="display: none;">
+                <div class="input-group">
+                    <input type="text" id="signupName" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="signupEmail" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="signupPassword" placeholder="Password" required>
+                </div>
+                <button type="submit" class="login-btn">Sign Up</button>
+            </form>
+            
+            <div class="auth-switch">
+                <span id="authSwitchText">Don't have an account? </span>
+                <a id="authSwitchLink" onclick="toggleAuthMode()">Sign up</a>
+            </div>
+            
+            <div style="text-align: center; margin-top: 10px;">
+                <a onclick="showForgotPassword()" style="color: var(--moss-green); text-decoration: none; font-size: 14px; cursor: pointer;">Forgot Password?</a>
+            </div>
+            
+            <!-- Forgot Password Form -->
+            <form class="login-form" id="forgotForm" style="display: none;">
+                <div class="input-group">
+                    <input type="email" id="resetEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="newPassword" placeholder="Enter new password" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="confirmPassword" placeholder="Confirm new password" required>
+                </div>
+                <button type="submit" class="login-btn">Reset Password</button>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a onclick="showLogin()" style="color: var(--moss-green); text-decoration: none; font-size: 14px; cursor: pointer;">Back to Login</a>
+                </div>
+            </form>
+            
+
+        </div>
+    </div>
+
+    <!-- User Info Display -->
+    <div id="userInfo" class="user-info">
+        <span id="userDisplayName">Welcome!</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- User Content -->
+    <div id="userContent" class="main-content">
+        <div class="container">
+            <div class="header">
+                <h1>🌲 Nature Retreat Booking</h1>
+                <p>Reconnect with nature in our serene accommodations</p>
+            </div>
+
+            <div class="booking-section">
+                <h2 style="margin-bottom: 20px; color: var(--forest-green); font-weight: normal;">Find Your Perfect Escape</h2>
+                <form class="search-form" id="searchForm">
+                    <div class="form-group">
+                        <label for="checkin">Check-in Date</label>
+                        <input type="date" id="checkin" name="checkin" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkout">Check-out Date</label>
+                        <input type="date" id="checkout" name="checkout" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guests">Guests</label>
+                        <select id="guests" name="guests" required>
+                            <option value="1">1 Guest</option>
+                            <option value="2">2 Guests</option>
+                            <option value="3">3 Guests</option>
+                            <option value="4">4 Guests</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="search-btn">Search Rooms</button>
+                </form>
+
+                <div id="searchLoading" class="search-loading">
+                    <div class="search-spinner"></div>
+                    <div class="search-text">🔍 Searching available rooms...</div>
+                </div>
+                
+                <div class="rooms-grid" id="roomsGrid">
+                    <!-- Rooms will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="booking-section">
+                <div class="section-header">
+                    <h2 style="margin-bottom: 20px; color: var(--forest-green); font-weight: normal;">My Bookings</h2>
+                    <button onclick="openCheckoutModal()" class="checkout-btn">Check-out</button>
+                </div>
+                <table class="bookings-table" id="userBookingsTable">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Room</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Guests</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userBookingsTableBody">
+                        <!-- User bookings will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="booking-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">✕</button>
+            <div class="modal-header">
+                <h2>Complete Your Booking</h2>
+                <p id="selectedRoomInfo"></p>
+            </div>
+            
+            <!-- Guest Details Form -->
+            <form class="booking-form" id="bookingForm">
+                <div class="form-group">
+                    <label for="guestName">Full Name</label>
+                    <input type="text" id="guestName" required>
+                </div>
+                <div class="form-group">
+                    <label for="guestEmail">Email</label>
+                    <input type="email" id="guestEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="guestPhone">Phone</label>
+                    <input type="tel" id="guestPhone" required>
+                </div>
+                
+                <!-- Voucher Section -->
+                <div class="voucher-section">
+                    <label for="voucherCode">Voucher Code (Optional)</label>
+                    <div class="voucher-input-group">
+                        <input type="text" id="voucherCode" placeholder="Enter voucher code">
+                        <button type="button" onclick="applyVoucher()" class="apply-voucher-btn">Apply</button>
+                    </div>
+                    <div id="voucherMessage" class="voucher-message"></div>
+                </div>
+                
+                <button type="button" onclick="proceedToPayment()" class="confirm-btn">Proceed to Payment</button>
+            </form>
+            
+            <!-- Payment Form -->
+            <form class="payment-form" id="paymentForm" style="display: none;">
+                <h3>Payment Details</h3>
+                <div id="finalBookingInfo" class="final-booking-info"></div>
+                
+                <div class="form-group">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" placeholder="123" maxlength="3" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cardName">Name on Card</label>
+                    <input type="text" id="cardName" required>
+                </div>
+                
+                <div class="payment-buttons">
+                    <button type="button" onclick="backToBooking()" class="back-btn">Back</button>
+                    <button type="submit" class="pay-btn">Complete Payment</button>
+                </div>
+            </form>
+            
+            <!-- Success Message -->
+            <div id="successMessage" class="success-message">
+                <strong>🎉 Payment Successful!</strong><br>
+                Your booking has been confirmed.<br>
+                <div id="bookingReference"></div>
+                <button onclick="downloadVoucher()" class="download-voucher-btn">🧾 Download Receipt</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="booking-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeCheckoutModal()">✕</button>
+            <div class="modal-header">
+                <h2>Check-out</h2>
+            </div>
+            <form class="checkout-form" id="checkoutForm">
+                <div class="form-group">
+                    <label for="checkoutBookingId">Booking ID</label>
+                    <input type="text" id="checkoutBookingId" placeholder="Enter your booking ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="checkoutEmail">Email</label>
+                    <input type="email" id="checkoutEmail" placeholder="Enter your email" required>
+                </div>
+                <button type="submit" class="confirm-btn">Check-out</button>
+            </form>
+            <div id="checkoutSuccess" class="success-message">
+                <strong>✅ Check-out Successful!</strong><br>
+                Thank you for staying with us!
+            </div>
+        </div>
+    </div>
+
+    <script src="script_php.js"></script>
+</body>
+</html>
